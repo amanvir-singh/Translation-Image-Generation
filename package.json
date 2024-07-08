@@ -1,0 +1,13 @@
+{
+    "name": "Translation & Image Generation App",
+    "version": "1.0.0",
+    "scripts": {
+      "install-frontend": "cd frontend && npm install",
+      "install-backend": "cd backend && npm install",
+      "install": "npm run install-frontend && npm run install-backend",
+      "build-frontend": "cd frontend && npm run build",
+      "start-server": "cd backend && npm run start",
+      "start": "npm run start-server"
+    }
+  }
+  
