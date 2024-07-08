@@ -39,7 +39,7 @@ function TranslationForm() {
     event.preventDefault();
     try {
       const response = await axios.post('https://translation-image-generation-backend.onrender.com/translate', {
-        text: inputText,
+        prompt: inputText,
         targetLanguage: selectedLanguage,
         model: selectedModel
       });

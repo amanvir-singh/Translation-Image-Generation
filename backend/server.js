@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { OpenAI } = require("openai");
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 const app = express();
 app.use(cors());
@@ -11,7 +13,7 @@ const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
 
 app.post('/translate', async (req, res) => {
     try {
-    const { text, targetLanguage, model } = req.body;
+    const { prompt, targetLanguage, model } = req.body;
     const translation = await openai.chat.completions.create({
       model: model || 'gpt-3.5-turbo', 
       messages: [
@@ -21,12 +23,21 @@ app.post('/translate', async (req, res) => {
         },
         {
           "role": "user",
-          "content": `${text}`
+          "content": `${prompt}`
         }
       ],
       max_tokens: 60,
     });
-    res.json({ translatedText: translation.choices[0].message.content});
+    const translatedText = translation.choices[0].message.content
+    const updateDatabase = await prisma.translation.create({
+      data: {
+        prompt,
+        translatedText,
+        model,
+        targetLanguage,
+      },
+    });
+    res.json({ translatedText: translatedText});
   } catch (error) {
     console.error(error);
     res.status(500).send('Error translating text');
@@ -78,8 +89,16 @@ app.post('/generate-image', async (req, res) => {
     }
 
     const response = await openai.images.generate(imageParams);
+    const imageUrl = response.data[0].url
+    const updateDatabase = await prisma.image.create({
+      data: {
+        prompt,
+        imageUrl,
+        model,
+      },
+    });
 
-    res.json({ imageUrl: response.data[0].url });
+    res.json({ imageUrl: imageUrl });
   } catch (error) {
     console.error('Error generating image:', error);
     res.status(500).json({ error: 'Error generating image' });
