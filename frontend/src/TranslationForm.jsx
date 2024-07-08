@@ -13,7 +13,7 @@ function TranslationForm() {
     const newText = event.target.value;
     setInputText(newText);
     if (newText.length > 2) {
-      axios.post(`http://localhost:3001/suggest?text=${newText}`)
+      axios.post(`https://translation-image-generation-backend.onrender.com/suggest?text=${newText}`)
         .then(response => setSuggestion(response.data.suggestion))
         .catch(error => console.error('Error:', error));
     } else {
@@ -38,7 +38,7 @@ function TranslationForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3001/translate', {
+      const response = await axios.post('https://translation-image-generation-backend.onrender.com/translate', {
         text: inputText,
         targetLanguage: selectedLanguage,
         model: selectedModel

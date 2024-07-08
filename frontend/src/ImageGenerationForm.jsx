@@ -20,7 +20,7 @@ function ImageGenerationForm() {
     event.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/generate-image', {
+      const response = await axios.post('https://translation-image-generation-backend.onrender.com/generate-image', {
         prompt: prompt,
         model: selectedModel
       });
