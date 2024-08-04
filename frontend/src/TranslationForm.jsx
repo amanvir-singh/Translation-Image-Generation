@@ -13,7 +13,7 @@ function TranslationForm() {
     const newText = event.target.value;
     setInputText(newText);
     if (newText.length > 2) {
-      axios.post(`https://translation-image-generation-backend.onrender.com/suggest?text=${newText}`)
+      axios.post(`https://translation-image-generation-backend.onrender.com/suggest?text=${newText}!`)
         .then(response => setSuggestion(response.data.suggestion))
         .catch(error => console.error('Error:', error));
     } else {
@@ -37,6 +37,12 @@ function TranslationForm() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const deeplUnsupportedLanguages = ['hindi', 'punjabi', 'armenian'];
+    if (selectedModel === 'deepl' && deeplUnsupportedLanguages.includes(selectedLanguage)) {
+      setTranslatedText(`DeepL does not support translation for ${selectedLanguage.charAt(0).toUpperCase() + selectedLanguage.slice(1)}!`);
+      return; 
+    }
+
     try {
       const response = await axios.post('https://translation-image-generation-backend.onrender.com/translate', {
         prompt: inputText,
@@ -50,7 +56,15 @@ function TranslationForm() {
   };
 
   const languages = ['english', 'french', 'spanish', 'armenian', 'arabic', 'romanian', 'russian', 'hindi', 'punjabi'];
-  const models = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo'];
+  const models = [
+    { name: 'GPT-3.5', value: 'gpt-3.5-turbo' },
+    { name: 'GPT-4', value: 'gpt-4' },
+    { name: 'GPT-4 Turbo', value: 'gpt-4-turbo' },
+    { name: 'Gemini 1.0', value: 'gemini-1.0-pro' },
+    { name: 'Gemini 1.5 Flash', value: 'gemini-1.5-flash' },
+    { name: 'Gemini 1.5 Pro', value: 'gemini-1.5-pro' },
+    { name: 'DeepL', value: 'deepl' }
+  ];
 
   return (
     <div className="translation-form">
@@ -81,16 +95,16 @@ function TranslationForm() {
           </div>
         </label>
         <label>
-          GPT Model:
+          Translation Model:
           <div className="model-group">
             {models.map(model => (
               <button
-                key={model}
+                key={model.value}
                 type="button"
-                className={`model-button ${selectedModel === model ? 'active' : ''}`}
-                onClick={handleModelSelect(model)}
+                className={`model-button ${selectedModel === model.value ? 'active' : ''}`}
+                onClick={handleModelSelect(model.value)}
               >
-                {model}
+                {model.name}
               </button>
             ))}
           </div>
