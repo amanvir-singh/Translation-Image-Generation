@@ -23,3 +23,30 @@ model Image {
   imageUrl  String
   createdAt DateTime @default(now())
 }
+
+model EmojiTranslation {
+  id              Int      @id @default(autoincrement())
+  prompt          String
+  emojiTranslation String
+  createdAt       DateTime @default(now())
+}
+
+model sarcasticChat{
+  id              Int      @id @default(autoincrement())
+  prompt          String
+  response        String
+  createdAt       DateTime @default(now())
+}
+
+model interviewQuestions{
+  id                      Int      @id @default(autoincrement())
+  topic                   String
+  numberOfQuestions       Int
+  questions               String
+}
+
+model moodColor{
+  id              Int      @id @default(autoincrement())
+  mood            String
+  colorCode       String
+}

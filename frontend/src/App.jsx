@@ -1,7 +1,6 @@
+import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
-import './App.css';
-import ImageGenerationForm from './ImageGenerationForm';
-import TranslationForm from './TranslationForm';
+import './css/App.scss';
 
 function App() {
   useEffect(() => {
@@ -10,13 +9,45 @@ function App() {
 
   return (
     <div className="App">
-      <div className="card translation-card">
-        <h2>Translation App</h2>
-        <TranslationForm />
-      </div>
-      <div className="card image-generation-card">
-        <h2>Image Generation</h2>
-        <ImageGenerationForm />
+      <h1 className="title">AI Tools</h1>
+      <div className="tools-container">
+        <Link to="/translate" className="tool-link">
+          <div className="tool-card">
+            <h2 className="tool-title">Translator</h2>
+            <p className="tool-description">Translate text between multiple languages using advanced AI models.</p>
+          </div>
+        </Link>
+        <Link to="/generate-image" className="tool-link">
+          <div className="tool-card">
+            <h2 className="tool-title">Image Generator</h2>
+            <p className="tool-description">Generate images from text prompts using state-of-the-art AI models.</p>
+          </div>
+        </Link>
+        <Link to="/emoji-translator" className="tool-link">
+          <div className="tool-card">
+            <h2 className="tool-title">Emoji Translation</h2>
+            <p className="tool-description">Translate regular text into emoji text.</p>
+          </div>
+        </Link>
+        <Link to="/sarcastic-chat" className="tool-link">
+          <div className="tool-card">
+            <h2 className="tool-title">Sarcastic ChatAI</h2>
+            <p className="tool-description">Chat with a factual chatbot that is also sarcastic.</p>
+          </div>
+        </Link>
+        <Link to="/interview-questions-generator" className="tool-link">
+          <div className="tool-card">
+            <h2 className="tool-title">Interview Questions Generator</h2>
+            <p className="tool-description">Create interview questions.</p>
+          </div>
+        </Link>
+        <Link to="/mood-to-color-changer" className="tool-link">
+          <div className="tool-card">
+            <h2 className="tool-title">Mood to Color Changer</h2>
+            <p className="tool-description">Turn a text description into a CSS color.</p>
+          </div>
+        </Link>
+        
       </div>
     </div>
   );

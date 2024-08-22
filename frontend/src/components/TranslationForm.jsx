@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import './TranslationForm.css';
+import '../css/TranslationForm.scss';
 
 function TranslationForm() {
   const [inputText, setInputText] = useState('');
@@ -8,12 +8,13 @@ function TranslationForm() {
   const [selectedLanguage, setSelectedLanguage] = useState('english');
   const [translatedText, setTranslatedText] = useState('');
   const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (event) => {
     const newText = event.target.value;
     setInputText(newText);
     if (newText.length > 2) {
-      axios.post(`https://translation-image-generation-backend.onrender.com/suggest?text=${newText}!`)
+      axios.post(`${import.meta.env.VITE_BACKEND_URL}/translate/suggest?text=${newText}!`)
         .then(response => setSuggestion(response.data.suggestion))
         .catch(error => console.error('Error:', error));
     } else {
@@ -42,9 +43,9 @@ function TranslationForm() {
       setTranslatedText(`DeepL does not support translation for ${selectedLanguage.charAt(0).toUpperCase() + selectedLanguage.slice(1)}!`);
       return; 
     }
-
+    setIsLoading(true); 
     try {
-      const response = await axios.post('https://translation-image-generation-backend.onrender.com/translate', {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/translate`, {
         prompt: inputText,
         targetLanguage: selectedLanguage,
         model: selectedModel
@@ -52,6 +53,8 @@ function TranslationForm() {
       setTranslatedText(response.data.translatedText);
     } catch (error) {
       console.error('Error:', error);
+    }finally {
+      setIsLoading(false); 
     }
   };
 
@@ -68,51 +71,65 @@ function TranslationForm() {
 
   return (
     <div className="translation-form">
+      <h2>Text Translator</h2>
       <form onSubmit={handleSubmit}>
-        <label>
-          Text:
-          <textarea value={inputText} onChange={handleInputChange} />
+        <div className="input-section">
+          <label htmlFor="input-text">Enter Text:</label>
+          <textarea 
+            id="input-text"
+            value={inputText} 
+            onChange={handleInputChange}
+            placeholder="Type or paste your text here..."
+          />
           {suggestion && (
             <div className="suggestion-container">
               <p>Did you mean:</p>
               <span className="suggestion-text" onClick={handleSuggestionClick}>{suggestion}</span>
             </div>
           )}
-        </label>
-        <label>
-          Translate to
-          <div className="radio-group">
-            {languages.map(lang => (
-              <button
-                key={lang}
-                type="button" 
-                className={`language-button ${selectedLanguage === lang ? 'active' : ''}`}
-                onClick={handleLanguageSelect(lang)}
-              >
-                {lang.charAt(0).toUpperCase() + lang.slice(1)}
-              </button>
-            ))}
+        </div>
+
+        <div className="options-section">
+          <div className="language-section">
+            <h3>Translate to:</h3>
+            <div className="radio-group">
+              {languages.map(lang => (
+                <button
+                  key={lang}
+                  type="button" 
+                  className={`language-button ${selectedLanguage === lang ? 'active' : ''}`}
+                  onClick={handleLanguageSelect(lang)}
+                >
+                  {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
-        </label>
-        <label>
-          Translation Model:
-          <div className="model-group">
-            {models.map(model => (
-              <button
-                key={model.value}
-                type="button"
-                className={`model-button ${selectedModel === model.value ? 'active' : ''}`}
-                onClick={handleModelSelect(model.value)}
-              >
-                {model.name}
-              </button>
-            ))}
+
+          <div className="model-section">
+            <h3>Translation Model:</h3>
+            <div className="model-group">
+              {models.map(model => (
+                <button
+                  key={model.value}
+                  type="button"
+                  className={`model-button ${selectedModel === model.value ? 'active' : ''}`}
+                  onClick={handleModelSelect(model.value)}
+                >
+                  {model.name}
+                </button>
+              ))}
+            </div>
           </div>
-        </label>
-        <button type="submit">Translate</button>
+        </div>
+        <button type="submit" className="translate-button" disabled={isLoading}>
+          {isLoading ? 'Translating...' : 'Translate'}
+        </button>
       </form>
+
       {translatedText && (
         <div className="translated-text-container">
+          <h3>Translation:</h3>
           <p>{translatedText}</p>
         </div>
       )}
